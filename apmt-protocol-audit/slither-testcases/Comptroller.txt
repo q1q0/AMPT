@@ -1,0 +1,496 @@
+Exponential.mul_(uint256,uint256,string) (Exponential.sol#305-312) uses a dangerous strict equality:
+	- require(bool,string)(c / a == b,errorMessage) (Exponential.sol#310)
+AMPT._writeCheckpoint(address,uint32,uint96,uint96) (Governance/AMPT.sol#265-276) uses a dangerous strict equality:
+	- nCheckpoints > 0 && checkpoints[delegatee][nCheckpoints - 1].fromBlock == blockNumber (Governance/AMPT.sol#268)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+INFO:Detectors:
+Reentrancy in CToken.liquidateBorrowInternal(address,uint256,CTokenInterface) (CToken.sol#926-941):
+	External calls:
+	- error = cTokenCollateral.accrueInterest() (CToken.sol#933)
+	- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+		- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+		- allowed = comptroller.seizeAllowed(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1047)
+		- allowed = comptroller.liquidateBorrowAllowed(address(this),address(cTokenCollateral),liquidator,borrower,repayAmount) (CToken.sol#954)
+		- comptroller.seizeVerify(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1088)
+		- comptroller.repayBorrowVerify(address(this),payer,borrower,vars.actualRepayAmount,vars.borrowerIndex) (CToken.sol#913)
+		- seizeError = cTokenCollateral.seize(liquidator,borrower,seizeTokens) (CToken.sol#1007)
+		- comptroller.liquidateBorrowVerify(address(this),address(cTokenCollateral),liquidator,borrower,actualRepayAmount,seizeTokens) (CToken.sol#1017)
+	State variables written after the call(s):
+	- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+		- totalBorrows = vars.totalBorrowsNew (CToken.sol#907)
+Reentrancy in CToken.redeemFresh(address,uint256,uint256) (CToken.sol#613-707):
+	External calls:
+	- allowed = comptroller.redeemAllowed(address(this),redeemer,vars.redeemTokens) (CToken.sol#653)
+	State variables written after the call(s):
+	- totalSupply = vars.totalSupplyNew (CToken.sol#696)
+Reentrancy in Comptroller.seizeAllowed(address,address,address,address,uint256) (Comptroller.sol#554-580):
+	External calls:
+	- distributeSupplierComp(cTokenCollateral,borrower,false) (Comptroller.sol#576)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	- distributeSupplierComp(cTokenCollateral,liquidator,false) (Comptroller.sol#577)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	State variables written after the call(s):
+	- distributeSupplierComp(cTokenCollateral,liquidator,false) (Comptroller.sol#577)
+		- compAccrued[supplier] = transferComp(supplier,supplierAccrued,0) (Comptroller.sol#1255)
+		- compAccrued[supplier] = transferComp(supplier,supplierAccrued,compClaimThreshold) (Comptroller.sol#1255)
+	- distributeSupplierComp(cTokenCollateral,liquidator,false) (Comptroller.sol#577)
+		- compSupplierIndex[cToken][supplier] = supplyIndex.mantissa (Comptroller.sol#1245)
+Reentrancy in Comptroller.transferAllowed(address,address,address,uint256) (Comptroller.sol#617-634):
+	External calls:
+	- distributeSupplierComp(cToken,src,false) (Comptroller.sol#630)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	- distributeSupplierComp(cToken,dst,false) (Comptroller.sol#631)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	State variables written after the call(s):
+	- distributeSupplierComp(cToken,dst,false) (Comptroller.sol#631)
+		- compAccrued[supplier] = transferComp(supplier,supplierAccrued,0) (Comptroller.sol#1255)
+		- compAccrued[supplier] = transferComp(supplier,supplierAccrued,compClaimThreshold) (Comptroller.sol#1255)
+	- distributeSupplierComp(cToken,dst,false) (Comptroller.sol#631)
+		- compSupplierIndex[cToken][supplier] = supplyIndex.mantissa (Comptroller.sol#1245)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
+INFO:Detectors:
+CToken._addReservesFresh(uint256).actualAddAmount (CToken.sol#1241) is a local variable never initialized
+CToken.repayBorrowFresh(address,address,uint256).vars (CToken.sol#862) is a local variable never initialized
+CToken.borrowFresh(address,uint256).vars (CToken.sol#753) is a local variable never initialized
+Comptroller.borrowAllowed(address,address,uint256).err_scope_0 (Comptroller.sol#384) is a local variable never initialized
+CToken.mintFresh(address,uint256).vars (CToken.sol#509) is a local variable never initialized
+CToken.redeemFresh(address,uint256,uint256).vars (CToken.sol#616) is a local variable never initialized
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#uninitialized-local-variables
+INFO:Detectors:
+Comptroller._supportMarket(CToken) (Comptroller.sol#1013-1031) ignores return value by cToken.isCToken() (Comptroller.sol#1022)
+Comptroller.transferComp(address,uint256,uint256) (Comptroller.sol#1288-1298) ignores return value by ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+INFO:Detectors:
+Comptroller.updateCompSupplyIndex(address).compAccrued (Comptroller.sol#1201) shadows:
+	- ComptrollerV3Storage.compAccrued (ComptrollerStorage.sol#128) (state variable)
+Comptroller.updateCompBorrowIndex(address,Exponential.Exp).compAccrued (Comptroller.sol#1224) shadows:
+	- ComptrollerV3Storage.compAccrued (ComptrollerStorage.sol#128) (state variable)
+Exponential.divScalarByExpTruncate(uint256,Exponential.Exp).fraction (Exponential.sol#135) shadows:
+	- Exponential.fraction(uint256,uint256) (Exponential.sol#347-349) (function)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#local-variable-shadowing
+INFO:Detectors:
+Comptroller.getHypotheticalAccountLiquidityInternal(address,CToken,uint256,uint256) (Comptroller.sol#729-801) has external calls inside a loop: (oErr,vars.cTokenBalance,vars.borrowBalance,vars.exchangeRateMantissa) = asset.getAccountSnapshot(account) (Comptroller.sol#745)
+Comptroller.getHypotheticalAccountLiquidityInternal(address,CToken,uint256,uint256) (Comptroller.sol#729-801) has external calls inside a loop: vars.oraclePriceMantissa = oracle.getUnderlyingPrice(asset) (Comptroller.sol#753)
+Comptroller.refreshCompSpeedsInternal() (Comptroller.sol#1160-1188) has external calls inside a loop: borrowIndex = Exp(cToken.borrowIndex()) (Comptroller.sol#1165)
+Comptroller.refreshCompSpeedsInternal() (Comptroller.sol#1160-1188) has external calls inside a loop: assetPrice = Exp(oracle.getUnderlyingPrice(cToken_scope_1)) (Comptroller.sol#1175)
+Comptroller.refreshCompSpeedsInternal() (Comptroller.sol#1160-1188) has external calls inside a loop: utility = mul_(assetPrice,cToken_scope_1.totalBorrows()) (Comptroller.sol#1176)
+Comptroller.claimComp(address[],CToken[],bool,bool) (Comptroller.sol#1326-1344) has external calls inside a loop: borrowIndex = Exp(cToken.borrowIndex()) (Comptroller.sol#1331)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation/#calls-inside-a-loop
+INFO:Detectors:
+Reentrancy in CToken.borrowFresh(address,uint256) (CToken.sol#736-799):
+	External calls:
+	- allowed = comptroller.borrowAllowed(address(this),borrower,borrowAmount) (CToken.sol#738)
+	State variables written after the call(s):
+	- accountBorrows[borrower].principal = vars.accountBorrowsNew (CToken.sol#788)
+	- accountBorrows[borrower].interestIndex = borrowIndex (CToken.sol#789)
+	- totalBorrows = vars.totalBorrowsNew (CToken.sol#790)
+Reentrancy in CToken.mintFresh(address,uint256) (CToken.sol#497-561):
+	External calls:
+	- allowed = comptroller.mintAllowed(address(this),minter,mintAmount) (CToken.sol#499)
+	State variables written after the call(s):
+	- accountTokens[minter] = vars.accountTokensNew (CToken.sol#551)
+	- totalSupply = vars.totalSupplyNew (CToken.sol#550)
+Reentrancy in CToken.redeemFresh(address,uint256,uint256) (CToken.sol#613-707):
+	External calls:
+	- allowed = comptroller.redeemAllowed(address(this),redeemer,vars.redeemTokens) (CToken.sol#653)
+	State variables written after the call(s):
+	- accountTokens[redeemer] = vars.accountTokensNew (CToken.sol#697)
+Reentrancy in CToken.repayBorrowFresh(address,address,uint256) (CToken.sol#850-916):
+	External calls:
+	- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+	State variables written after the call(s):
+	- accountBorrows[borrower].principal = vars.accountBorrowsNew (CToken.sol#905)
+	- accountBorrows[borrower].interestIndex = borrowIndex (CToken.sol#906)
+	- totalBorrows = vars.totalBorrowsNew (CToken.sol#907)
+Reentrancy in CToken.seizeInternal(address,address,address,uint256) (CToken.sol#1045-1091):
+	External calls:
+	- allowed = comptroller.seizeAllowed(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1047)
+	State variables written after the call(s):
+	- accountTokens[borrower] = borrowerTokensNew (CToken.sol#1081)
+	- accountTokens[liquidator] = liquidatorTokensNew (CToken.sol#1082)
+Reentrancy in CToken.transferTokens(address,address,address,uint256) (CToken.sol#68-127):
+	External calls:
+	- allowed = comptroller.transferAllowed(address(this),src,dst,tokens) (CToken.sol#70)
+	State variables written after the call(s):
+	- accountTokens[src] = srcTokensNew (CToken.sol#113)
+	- accountTokens[dst] = dstTokensNew (CToken.sol#114)
+	- transferAllowances[src][spender] = allowanceNew (CToken.sol#118)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
+INFO:Detectors:
+Reentrancy in CToken.borrowFresh(address,uint256) (CToken.sol#736-799):
+	External calls:
+	- allowed = comptroller.borrowAllowed(address(this),borrower,borrowAmount) (CToken.sol#738)
+	Event emitted after the call(s):
+	- Borrow(borrower,borrowAmount,vars.accountBorrowsNew,vars.totalBorrowsNew) (CToken.sol#793)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.MARKET_NOT_FRESH,FailureInfo.BORROW_FRESHNESS_CHECK) (CToken.sol#745)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.BORROW_NEW_TOTAL_BALANCE_CALCULATION_FAILED,uint256(vars.mathErr)) (CToken.sol#772)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.BORROW_NEW_ACCOUNT_BORROW_BALANCE_CALCULATION_FAILED,uint256(vars.mathErr)) (CToken.sol#767)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.TOKEN_INSUFFICIENT_CASH,FailureInfo.BORROW_CASH_NOT_AVAILABLE) (CToken.sol#750)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED,uint256(vars.mathErr)) (CToken.sol#762)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.BORROW_COMPTROLLER_REJECTION,allowed) (CToken.sol#740)
+Reentrancy in Comptroller.distributeBorrowerComp(address,address,Exponential.Exp,bool) (Comptroller.sol#1265-1279):
+	External calls:
+	- compAccrued[borrower] = transferComp(borrower,borrowerAccrued,0) (Comptroller.sol#1276)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	- compAccrued[borrower] = transferComp(borrower,borrowerAccrued,compClaimThreshold) (Comptroller.sol#1276)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	Event emitted after the call(s):
+	- DistributedBorrowerComp(CToken(cToken),borrower,borrowerDelta,borrowIndex.mantissa) (Comptroller.sol#1277)
+Reentrancy in Comptroller.distributeSupplierComp(address,address,bool) (Comptroller.sol#1241-1257):
+	External calls:
+	- compAccrued[supplier] = transferComp(supplier,supplierAccrued,0) (Comptroller.sol#1255)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	- compAccrued[supplier] = transferComp(supplier,supplierAccrued,compClaimThreshold) (Comptroller.sol#1255)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	Event emitted after the call(s):
+	- DistributedSupplierComp(CToken(cToken),supplier,supplierDelta,supplyIndex.mantissa) (Comptroller.sol#1256)
+Reentrancy in CToken.liquidateBorrowFresh(address,address,uint256,CTokenInterface) (CToken.sol#952-1020):
+	External calls:
+	- allowed = comptroller.liquidateBorrowAllowed(address(this),address(cTokenCollateral),liquidator,borrower,repayAmount) (CToken.sol#954)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.INVALID_ACCOUNT_PAIR,FailureInfo.LIQUIDATE_LIQUIDATOR_IS_BORROWER),0) (CToken.sol#971)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.INVALID_CLOSE_AMOUNT_REQUESTED,FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_ZERO),0) (CToken.sol#976)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- (failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.LIQUIDATE_COMPTROLLER_REJECTION,allowed),0) (CToken.sol#956)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.MARKET_NOT_FRESH,FailureInfo.LIQUIDATE_FRESHNESS_CHECK),0) (CToken.sol#961)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.INVALID_CLOSE_AMOUNT_REQUESTED,FailureInfo.LIQUIDATE_CLOSE_AMOUNT_IS_UINT_MAX),0) (CToken.sol#981)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.MARKET_NOT_FRESH,FailureInfo.LIQUIDATE_COLLATERAL_FRESHNESS_CHECK),0) (CToken.sol#966)
+Reentrancy in CToken.liquidateBorrowFresh(address,address,uint256,CTokenInterface) (CToken.sol#952-1020):
+	External calls:
+	- allowed = comptroller.liquidateBorrowAllowed(address(this),address(cTokenCollateral),liquidator,borrower,repayAmount) (CToken.sol#954)
+	- (repayBorrowError,actualRepayAmount) = repayBorrowFresh(liquidator,borrower,repayAmount) (CToken.sol#986)
+		- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+		- comptroller.repayBorrowVerify(address(this),payer,borrower,vars.actualRepayAmount,vars.borrowerIndex) (CToken.sol#913)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (repayBorrowError,actualRepayAmount) = repayBorrowFresh(liquidator,borrower,repayAmount) (CToken.sol#986)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- (repayBorrowError,actualRepayAmount) = repayBorrowFresh(liquidator,borrower,repayAmount) (CToken.sol#986)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(TokenErrorReporter.Error(repayBorrowError),FailureInfo.LIQUIDATE_REPAY_BORROW_FRESH_FAILED),0) (CToken.sol#988)
+	- RepayBorrow(payer,borrower,vars.actualRepayAmount,vars.accountBorrowsNew,vars.totalBorrowsNew) (CToken.sol#910)
+		- (repayBorrowError,actualRepayAmount) = repayBorrowFresh(liquidator,borrower,repayAmount) (CToken.sol#986)
+Reentrancy in CToken.liquidateBorrowFresh(address,address,uint256,CTokenInterface) (CToken.sol#952-1020):
+	External calls:
+	- allowed = comptroller.liquidateBorrowAllowed(address(this),address(cTokenCollateral),liquidator,borrower,repayAmount) (CToken.sol#954)
+	- (repayBorrowError,actualRepayAmount) = repayBorrowFresh(liquidator,borrower,repayAmount) (CToken.sol#986)
+		- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+		- comptroller.repayBorrowVerify(address(this),payer,borrower,vars.actualRepayAmount,vars.borrowerIndex) (CToken.sol#913)
+	- seizeError = seizeInternal(address(this),liquidator,borrower,seizeTokens) (CToken.sol#1005)
+		- allowed = comptroller.seizeAllowed(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1047)
+		- comptroller.seizeVerify(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1088)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- seizeError = seizeInternal(address(this),liquidator,borrower,seizeTokens) (CToken.sol#1005)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- seizeError = seizeInternal(address(this),liquidator,borrower,seizeTokens) (CToken.sol#1005)
+	- Transfer(borrower,liquidator,seizeTokens) (CToken.sol#1085)
+		- seizeError = seizeInternal(address(this),liquidator,borrower,seizeTokens) (CToken.sol#1005)
+Reentrancy in CToken.liquidateBorrowFresh(address,address,uint256,CTokenInterface) (CToken.sol#952-1020):
+	External calls:
+	- allowed = comptroller.liquidateBorrowAllowed(address(this),address(cTokenCollateral),liquidator,borrower,repayAmount) (CToken.sol#954)
+	- (repayBorrowError,actualRepayAmount) = repayBorrowFresh(liquidator,borrower,repayAmount) (CToken.sol#986)
+		- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+		- comptroller.repayBorrowVerify(address(this),payer,borrower,vars.actualRepayAmount,vars.borrowerIndex) (CToken.sol#913)
+	- seizeError = seizeInternal(address(this),liquidator,borrower,seizeTokens) (CToken.sol#1005)
+		- allowed = comptroller.seizeAllowed(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1047)
+		- comptroller.seizeVerify(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1088)
+	- seizeError = cTokenCollateral.seize(liquidator,borrower,seizeTokens) (CToken.sol#1007)
+	Event emitted after the call(s):
+	- LiquidateBorrow(liquidator,borrower,actualRepayAmount,address(cTokenCollateral),seizeTokens) (CToken.sol#1014)
+Reentrancy in CToken.liquidateBorrowInternal(address,uint256,CTokenInterface) (CToken.sol#926-941):
+	External calls:
+	- error = cTokenCollateral.accrueInterest() (CToken.sol#933)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(TokenErrorReporter.Error(error),FailureInfo.LIQUIDATE_ACCRUE_COLLATERAL_INTEREST_FAILED),0) (CToken.sol#936)
+Reentrancy in CToken.liquidateBorrowInternal(address,uint256,CTokenInterface) (CToken.sol#926-941):
+	External calls:
+	- error = cTokenCollateral.accrueInterest() (CToken.sol#933)
+	- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+		- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+		- allowed = comptroller.seizeAllowed(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1047)
+		- allowed = comptroller.liquidateBorrowAllowed(address(this),address(cTokenCollateral),liquidator,borrower,repayAmount) (CToken.sol#954)
+		- comptroller.seizeVerify(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1088)
+		- comptroller.repayBorrowVerify(address(this),payer,borrower,vars.actualRepayAmount,vars.borrowerIndex) (CToken.sol#913)
+		- seizeError = cTokenCollateral.seize(liquidator,borrower,seizeTokens) (CToken.sol#1007)
+		- comptroller.liquidateBorrowVerify(address(this),address(cTokenCollateral),liquidator,borrower,actualRepayAmount,seizeTokens) (CToken.sol#1017)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+	- LiquidateBorrow(liquidator,borrower,actualRepayAmount,address(cTokenCollateral),seizeTokens) (CToken.sol#1014)
+		- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+	- RepayBorrow(payer,borrower,vars.actualRepayAmount,vars.accountBorrowsNew,vars.totalBorrowsNew) (CToken.sol#910)
+		- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+	- Transfer(borrower,liquidator,seizeTokens) (CToken.sol#1085)
+		- liquidateBorrowFresh(msg.sender,borrower,repayAmount,cTokenCollateral) (CToken.sol#940)
+Reentrancy in CToken.mintFresh(address,uint256) (CToken.sol#497-561):
+	External calls:
+	- allowed = comptroller.mintAllowed(address(this),minter,mintAmount) (CToken.sol#499)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- (failOpaque(Error.MATH_ERROR,FailureInfo.MINT_EXCHANGE_RATE_READ_FAILED,uint256(vars.mathErr)),0) (CToken.sol#513)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.MARKET_NOT_FRESH,FailureInfo.MINT_FRESHNESS_CHECK),0) (CToken.sol#506)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- (failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.MINT_COMPTROLLER_REJECTION,allowed),0) (CToken.sol#501)
+	- Mint(minter,vars.actualMintAmount,vars.mintTokens) (CToken.sol#554)
+	- Transfer(address(this),minter,vars.mintTokens) (CToken.sol#555)
+Reentrancy in CToken.redeemFresh(address,uint256,uint256) (CToken.sol#613-707):
+	External calls:
+	- allowed = comptroller.redeemAllowed(address(this),redeemer,vars.redeemTokens) (CToken.sol#653)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.REDEEM_NEW_TOTAL_SUPPLY_CALCULATION_FAILED,uint256(vars.mathErr)) (CToken.sol#670)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.REDEEM_NEW_ACCOUNT_BALANCE_CALCULATION_FAILED,uint256(vars.mathErr)) (CToken.sol#675)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.REDEEM_COMPTROLLER_REJECTION,allowed) (CToken.sol#655)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.TOKEN_INSUFFICIENT_CASH,FailureInfo.REDEEM_TRANSFER_OUT_NOT_POSSIBLE) (CToken.sol#680)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.MARKET_NOT_FRESH,FailureInfo.REDEEM_FRESHNESS_CHECK) (CToken.sol#660)
+	- Redeem(redeemer,vars.redeemAmount,vars.redeemTokens) (CToken.sol#701)
+	- Transfer(redeemer,address(this),vars.redeemTokens) (CToken.sol#700)
+Reentrancy in CToken.repayBorrowFresh(address,address,uint256) (CToken.sol#850-916):
+	External calls:
+	- allowed = comptroller.repayBorrowAllowed(address(this),payer,borrower,repayAmount) (CToken.sol#852)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- (failOpaque(Error.MATH_ERROR,FailureInfo.REPAY_BORROW_ACCUMULATED_BALANCE_CALCULATION_FAILED,uint256(vars.mathErr)),0) (CToken.sol#870)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- (failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.REPAY_BORROW_COMPTROLLER_REJECTION,allowed),0) (CToken.sol#854)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- (fail(Error.MARKET_NOT_FRESH,FailureInfo.REPAY_BORROW_FRESHNESS_CHECK),0) (CToken.sol#859)
+	- RepayBorrow(payer,borrower,vars.actualRepayAmount,vars.accountBorrowsNew,vars.totalBorrowsNew) (CToken.sol#910)
+Reentrancy in Comptroller.seizeAllowed(address,address,address,address,uint256) (Comptroller.sol#554-580):
+	External calls:
+	- distributeSupplierComp(cTokenCollateral,borrower,false) (Comptroller.sol#576)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	- distributeSupplierComp(cTokenCollateral,liquidator,false) (Comptroller.sol#577)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	Event emitted after the call(s):
+	- DistributedSupplierComp(CToken(cToken),supplier,supplierDelta,supplyIndex.mantissa) (Comptroller.sol#1256)
+		- distributeSupplierComp(cTokenCollateral,liquidator,false) (Comptroller.sol#577)
+Reentrancy in CToken.seizeInternal(address,address,address,uint256) (CToken.sol#1045-1091):
+	External calls:
+	- allowed = comptroller.seizeAllowed(address(this),seizerToken,liquidator,borrower,seizeTokens) (CToken.sol#1047)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.LIQUIDATE_SEIZE_BALANCE_INCREMENT_FAILED,uint256(mathErr)) (CToken.sol#1073)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.LIQUIDATE_SEIZE_COMPTROLLER_REJECTION,allowed) (CToken.sol#1049)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.INVALID_ACCOUNT_PAIR,FailureInfo.LIQUIDATE_SEIZE_LIQUIDATOR_IS_BORROWER) (CToken.sol#1054)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.MATH_ERROR,FailureInfo.LIQUIDATE_SEIZE_BALANCE_DECREMENT_FAILED,uint256(mathErr)) (CToken.sol#1068)
+	- Transfer(borrower,liquidator,seizeTokens) (CToken.sol#1085)
+Reentrancy in Comptroller.transferAllowed(address,address,address,uint256) (Comptroller.sol#617-634):
+	External calls:
+	- distributeSupplierComp(cToken,src,false) (Comptroller.sol#630)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	- distributeSupplierComp(cToken,dst,false) (Comptroller.sol#631)
+		- ampt.transfer(user,userAccrued) (Comptroller.sol#1293)
+	Event emitted after the call(s):
+	- DistributedSupplierComp(CToken(cToken),supplier,supplierDelta,supplyIndex.mantissa) (Comptroller.sol#1256)
+		- distributeSupplierComp(cToken,dst,false) (Comptroller.sol#631)
+Reentrancy in CToken.transferTokens(address,address,address,uint256) (CToken.sol#68-127):
+	External calls:
+	- allowed = comptroller.transferAllowed(address(this),src,dst,tokens) (CToken.sol#70)
+	Event emitted after the call(s):
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.BAD_INPUT,FailureInfo.TRANSFER_NOT_ALLOWED) (CToken.sol#77)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.MATH_ERROR,FailureInfo.TRANSFER_NOT_ENOUGH) (CToken.sol#101)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.MATH_ERROR,FailureInfo.TRANSFER_NOT_ALLOWED) (CToken.sol#96)
+	- Failure(uint256(err),uint256(info),0) (ErrorReporter.sol#194)
+		- fail(Error.MATH_ERROR,FailureInfo.TRANSFER_TOO_MUCH) (CToken.sol#106)
+	- Failure(uint256(err),uint256(info),opaqueError) (ErrorReporter.sol#203)
+		- failOpaque(Error.COMPTROLLER_REJECTION,FailureInfo.TRANSFER_COMPTROLLER_REJECTION,allowed) (CToken.sol#72)
+	- Transfer(src,dst,tokens) (CToken.sol#122)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+INFO:Detectors:
+AMPT.delegateBySig(address,uint256,uint256,uint8,bytes32,bytes32) (Governance/AMPT.sol#164-173) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(now <= expiry,AMPT::delegateBySig: signature expired) (Governance/AMPT.sol#171)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+AMPT.getChainId() (Governance/AMPT.sol#299-303) uses assembly
+	- INLINE ASM (Governance/AMPT.sol#301)
+Unitroller.fallback() (Unitroller.sol#135-147) uses assembly
+	- INLINE ASM (Unitroller.sol#139-146)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
+INFO:Detectors:
+Comptroller.addToMarketInternal(CToken,address) (Comptroller.sol#143-172) compares to a boolean constant:
+	-marketToJoin.accountMembership[borrower] == true (Comptroller.sol#151)
+Comptroller._setMintPaused(CToken,bool) (Comptroller.sol#1100-1108) compares to a boolean constant:
+	-require(bool,string)(msg.sender == admin || state == true,only admin can unpause) (Comptroller.sol#1103)
+Comptroller._setBorrowPaused(CToken,bool) (Comptroller.sol#1110-1118) compares to a boolean constant:
+	-require(bool,string)(msg.sender == admin || state == true,only admin can unpause) (Comptroller.sol#1113)
+Comptroller._setTransferPaused(bool) (Comptroller.sol#1120-1127) compares to a boolean constant:
+	-require(bool,string)(msg.sender == admin || state == true,only admin can unpause) (Comptroller.sol#1122)
+Comptroller._setSeizePaused(bool) (Comptroller.sol#1129-1136) compares to a boolean constant:
+	-require(bool,string)(msg.sender == admin || state == true,only admin can unpause) (Comptroller.sol#1131)
+Comptroller.claimComp(address[],CToken[],bool,bool) (Comptroller.sol#1326-1344) compares to a boolean constant:
+	-borrowers == true (Comptroller.sol#1330)
+Comptroller.claimComp(address[],CToken[],bool,bool) (Comptroller.sol#1326-1344) compares to a boolean constant:
+	-suppliers == true (Comptroller.sol#1337)
+Comptroller._addCompMarketInternal(address) (Comptroller.sol#1376-1397) compares to a boolean constant:
+	-require(bool,string)(market.isListed == true,comp market is not listed) (Comptroller.sol#1378)
+Comptroller._addCompMarketInternal(address) (Comptroller.sol#1376-1397) compares to a boolean constant:
+	-require(bool,string)(market.isComped == false,comp market already added) (Comptroller.sol#1379)
+Comptroller._dropCompMarket(address) (Comptroller.sol#1403-1413) compares to a boolean constant:
+	-require(bool,string)(market.isComped == true,market is not a comp market) (Comptroller.sol#1407)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#boolean-equality
+INFO:Detectors:
+Low level call in Unitroller.fallback() (Unitroller.sol#135-147):
+	- (success) = comptrollerImplementation.delegatecall(msg.data) (Unitroller.sol#137)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+Function CToken._setPendingAdmin(address) (CToken.sol#1102-1118) is not in mixedCase
+Function CToken._acceptAdmin() (CToken.sol#1125-1145) is not in mixedCase
+Function CToken._setComptroller(ComptrollerInterface) (CToken.sol#1152-1169) is not in mixedCase
+Function CToken._setReserveFactor(uint256) (CToken.sol#1176-1184) is not in mixedCase
+Function CToken._reduceReserves(uint256) (CToken.sol#1283-1291) is not in mixedCase
+Function CToken._setInterestRateModel(InterestRateModel) (CToken.sol#1348-1356) is not in mixedCase
+Variable CTokenStorage._notEntered (CTokenInterfaces.sol#10) is not in mixedCase
+Constant CTokenStorage.borrowRateMaxMantissa (CTokenInterfaces.sol#31) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant CTokenStorage.reserveFactorMaxMantissa (CTokenInterfaces.sol#36) is not in UPPER_CASE_WITH_UNDERSCORES
+Function CTokenInterface._setPendingAdmin(address) (CTokenInterfaces.sol#235) is not in mixedCase
+Function CTokenInterface._acceptAdmin() (CTokenInterfaces.sol#236) is not in mixedCase
+Function CTokenInterface._setComptroller(ComptrollerInterface) (CTokenInterfaces.sol#237) is not in mixedCase
+Function CTokenInterface._setReserveFactor(uint256) (CTokenInterfaces.sol#238) is not in mixedCase
+Function CTokenInterface._reduceReserves(uint256) (CTokenInterfaces.sol#239) is not in mixedCase
+Function CTokenInterface._setInterestRateModel(InterestRateModel) (CTokenInterfaces.sol#240) is not in mixedCase
+Constant CTokenInterface.isCToken (CTokenInterfaces.sol#123) is not in UPPER_CASE_WITH_UNDERSCORES
+Function CErc20Interface._addReserves(uint256) (CTokenInterfaces.sol#265) is not in mixedCase
+Function CDelegatorInterface._setImplementation(address,bool,bytes) (CTokenInterfaces.sol#287) is not in mixedCase
+Function CDelegateInterface._becomeImplementation(bytes) (CTokenInterfaces.sol#296) is not in mixedCase
+Function CDelegateInterface._resignImplementation() (CTokenInterfaces.sol#301) is not in mixedCase
+Function Comptroller._setPriceOracle(PriceOracle) (Comptroller.sol#862-878) is not in mixedCase
+Function Comptroller._setCloseFactor(uint256) (Comptroller.sol#886-908) is not in mixedCase
+Function Comptroller._setCollateralFactor(CToken,uint256) (Comptroller.sol#917-950) is not in mixedCase
+Function Comptroller._setMaxAssets(uint256) (Comptroller.sol#958-969) is not in mixedCase
+Function Comptroller._setLiquidationIncentive(uint256) (Comptroller.sol#977-1005) is not in mixedCase
+Function Comptroller._supportMarket(CToken) (Comptroller.sol#1013-1031) is not in mixedCase
+Function Comptroller._setMarketBorrowCaps(CToken[],uint256[]) (Comptroller.sol#1047-1059) is not in mixedCase
+Function Comptroller._setBorrowCapGuardian(address) (Comptroller.sol#1065-1076) is not in mixedCase
+Function Comptroller._setPauseGuardian(address) (Comptroller.sol#1083-1098) is not in mixedCase
+Function Comptroller._setMintPaused(CToken,bool) (Comptroller.sol#1100-1108) is not in mixedCase
+Function Comptroller._setBorrowPaused(CToken,bool) (Comptroller.sol#1110-1118) is not in mixedCase
+Function Comptroller._setTransferPaused(bool) (Comptroller.sol#1120-1127) is not in mixedCase
+Function Comptroller._setSeizePaused(bool) (Comptroller.sol#1129-1136) is not in mixedCase
+Function Comptroller._become(Unitroller) (Comptroller.sol#1138-1141) is not in mixedCase
+Function Comptroller._setCompRate(uint256) (Comptroller.sol#1352-1360) is not in mixedCase
+Function Comptroller._addCompMarkets(address[]) (Comptroller.sol#1366-1374) is not in mixedCase
+Function Comptroller._dropCompMarket(address) (Comptroller.sol#1403-1413) is not in mixedCase
+Constant Comptroller.compClaimThreshold (Comptroller.sol#72) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Comptroller.compInitialIndex (Comptroller.sol#75) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Comptroller.closeFactorMinMantissa (Comptroller.sol#78) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Comptroller.closeFactorMaxMantissa (Comptroller.sol#81) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Comptroller.collateralFactorMaxMantissa (Comptroller.sol#84) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Comptroller.liquidationIncentiveMinMantissa (Comptroller.sol#87) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Comptroller.liquidationIncentiveMaxMantissa (Comptroller.sol#90) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant ComptrollerInterface.isComptroller (ComptrollerInterface.sol#5) is not in UPPER_CASE_WITH_UNDERSCORES
+Variable ComptrollerV2Storage._mintGuardianPaused (ComptrollerStorage.sol#89) is not in mixedCase
+Variable ComptrollerV2Storage._borrowGuardianPaused (ComptrollerStorage.sol#90) is not in mixedCase
+Constant Exponential.expScale (Exponential.sol#13) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Exponential.doubleScale (Exponential.sol#14) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Exponential.halfExpScale (Exponential.sol#15) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Exponential.mantissaOne (Exponential.sol#16) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant AMPT.totalSupply (Governance/AMPT.sol#18) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant InterestRateModel.isInterestRateModel (InterestRateModel.sol#9) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant PriceOracle.isPriceOracle (PriceOracle.sol#7) is not in UPPER_CASE_WITH_UNDERSCORES
+Function Unitroller._setPendingImplementation(address) (Unitroller.sol#38-51) is not in mixedCase
+Function Unitroller._acceptImplementation() (Unitroller.sol#58-76) is not in mixedCase
+Function Unitroller._setPendingAdmin(address) (Unitroller.sol#85-101) is not in mixedCase
+Function Unitroller._acceptAdmin() (Unitroller.sol#108-128) is not in mixedCase
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformity-to-solidity-naming-conventions
+INFO:Detectors:
+AMPT.slitherConstructorConstantVariables() (Governance/AMPT.sol#7-304) uses literals with too many digits:
+	- totalSupply = 100000000e18 (Governance/AMPT.sol#18)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#too-many-digits
+INFO:Detectors:
+Exponential.mantissaOne (Exponential.sol#16) is never used in Comptroller (Comptroller.sol#16-1435)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-state-variables
+INFO:Detectors:
+CDelegationStorage.implementation (CTokenInterfaces.sol#272) should be constant
+CErc20Storage.underlying (CTokenInterfaces.sol#247) should be constant
+ComptrollerV2Storage._borrowGuardianPaused (ComptrollerStorage.sol#90) should be constant
+ComptrollerV2Storage._mintGuardianPaused (ComptrollerStorage.sol#89) should be constant
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+INFO:Detectors:
+initialize(ComptrollerInterface,InterestRateModel,uint256,string,string,uint8) should be declared external:
+	- CToken.initialize(ComptrollerInterface,InterestRateModel,uint256,string,string,uint8) (CToken.sol#26-57)
+_setInterestRateModel(InterestRateModel) should be declared external:
+	- CToken._setInterestRateModel(InterestRateModel) (CToken.sol#1348-1356)
+	- CTokenInterface._setInterestRateModel(InterestRateModel) (CTokenInterfaces.sol#240)
+_setImplementation(address,bool,bytes) should be declared external:
+	- CDelegatorInterface._setImplementation(address,bool,bytes) (CTokenInterfaces.sol#287)
+_becomeImplementation(bytes) should be declared external:
+	- CDelegateInterface._becomeImplementation(bytes) (CTokenInterfaces.sol#296)
+_resignImplementation() should be declared external:
+	- CDelegateInterface._resignImplementation() (CTokenInterfaces.sol#301)
+enterMarkets(address[]) should be declared external:
+	- Comptroller.enterMarkets(address[]) (Comptroller.sol#124-135)
+getAccountLiquidity(address) should be declared external:
+	- Comptroller.getAccountLiquidity(address) (Comptroller.sol#682-686)
+getHypotheticalAccountLiquidity(address,address,uint256,uint256) should be declared external:
+	- Comptroller.getHypotheticalAccountLiquidity(address,address,uint256,uint256) (Comptroller.sol#708-715)
+_setPriceOracle(PriceOracle) should be declared external:
+	- Comptroller._setPriceOracle(PriceOracle) (Comptroller.sol#862-878)
+_setPauseGuardian(address) should be declared external:
+	- Comptroller._setPauseGuardian(address) (Comptroller.sol#1083-1098)
+_setMintPaused(CToken,bool) should be declared external:
+	- Comptroller._setMintPaused(CToken,bool) (Comptroller.sol#1100-1108)
+_setBorrowPaused(CToken,bool) should be declared external:
+	- Comptroller._setBorrowPaused(CToken,bool) (Comptroller.sol#1110-1118)
+_setTransferPaused(bool) should be declared external:
+	- Comptroller._setTransferPaused(bool) (Comptroller.sol#1120-1127)
+_setSeizePaused(bool) should be declared external:
+	- Comptroller._setSeizePaused(bool) (Comptroller.sol#1129-1136)
+_become(Unitroller) should be declared external:
+	- Comptroller._become(Unitroller) (Comptroller.sol#1138-1141)
+refreshCompSpeeds() should be declared external:
+	- Comptroller.refreshCompSpeeds() (Comptroller.sol#1155-1158)
+claimComp(address) should be declared external:
+	- Comptroller.claimComp(address) (Comptroller.sol#1304-1306)
+_setCompRate(uint256) should be declared external:
+	- Comptroller._setCompRate(uint256) (Comptroller.sol#1352-1360)
+_addCompMarkets(address[]) should be declared external:
+	- Comptroller._addCompMarkets(address[]) (Comptroller.sol#1366-1374)
+_dropCompMarket(address) should be declared external:
+	- Comptroller._dropCompMarket(address) (Comptroller.sol#1403-1413)
+getAllMarkets() should be declared external:
+	- Comptroller.getAllMarkets() (Comptroller.sol#1420-1422)
+delegate(address) should be declared external:
+	- AMPT.delegate(address) (Governance/AMPT.sol#151-153)
+delegateBySig(address,uint256,uint256,uint8,bytes32,bytes32) should be declared external:
+	- AMPT.delegateBySig(address,uint256,uint256,uint8,bytes32,bytes32) (Governance/AMPT.sol#164-173)
+getPriorVotes(address,uint256) should be declared external:
+	- AMPT.getPriorVotes(address,uint256) (Governance/AMPT.sol#192-224)
+_setPendingImplementation(address) should be declared external:
+	- Unitroller._setPendingImplementation(address) (Unitroller.sol#38-51)
+_acceptImplementation() should be declared external:
+	- Unitroller._acceptImplementation() (Unitroller.sol#58-76)
+_setPendingAdmin(address) should be declared external:
+	- Unitroller._setPendingAdmin(address) (Unitroller.sol#85-101)
+_acceptAdmin() should be declared external:
+	- Unitroller._acceptAdmin() (Unitroller.sol#108-128)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:Comptroller.sol analyzed (25 contracts with 46 detectors), 184 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

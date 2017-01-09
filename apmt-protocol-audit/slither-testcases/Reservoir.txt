@@ -1,0 +1,14 @@
+$ slither Reservoir.sol
+INFO:Detectors:
+Reservoir.mul(uint256,uint256,string) (Reservoir.sol#82-89) uses a dangerous strict equality:
+	- require(bool,string)(c / a == b,errorMessage) (Reservoir.sol#87)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#dangerous-strict-equalities
+INFO:Detectors:
+Reservoir.drip() (Reservoir.sol#45-66) ignores return value by token_.transfer(target_,toDrip_) (Reservoir.sol#63)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-return
+INFO:Detectors:
+drip() should be declared external:
+	- Reservoir.drip() (Reservoir.sol#45-66)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:Reservoir.sol analyzed (2 contracts with 46 detectors), 3 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

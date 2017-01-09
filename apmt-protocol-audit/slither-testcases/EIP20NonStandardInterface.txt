@@ -1,0 +1,7 @@
+INFO:Detectors:
+EIP20NonStandardInterface (EIP20NonStandardInterface.sol#8-70) has incorrect ERC20 function interface:EIP20NonStandardInterface.transfer(address,uint256) (EIP20NonStandardInterface.sol#34)
+EIP20NonStandardInterface (EIP20NonStandardInterface.sol#8-70) has incorrect ERC20 function interface:EIP20NonStandardInterface.transferFrom(address,address,uint256) (EIP20NonStandardInterface.sol#48)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-erc20-interface
+INFO:Slither:EIP20NonStandardInterface.sol analyzed (1 contracts with 46 detectors), 2 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration
+

@@ -1,0 +1,13 @@
+.history
+node_modules
+.DS_Store
+.vscode
+stats.json
+dist
+*.log
+coverage
+.env
+package-lock.json
+# yalc
+.yalc
+yalc.lock

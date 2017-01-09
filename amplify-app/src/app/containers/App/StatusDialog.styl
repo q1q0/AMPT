@@ -1,0 +1,134 @@
+.statusDialog
+    .ant-modal-body
+        padding: 0
+
+    .statusTitle
+        height: 48px
+        line-height: @height
+        margin: 0 10px
+        padding: 0 18px
+        font-weight: bold
+        color: #4F5F6F
+        font-size: 20px
+        border-bottom: 1px solid #E1E7F0
+
+    .statusText
+        font-size: 14px
+        font-family: Microsoft YaHei
+        font-weight: 400
+        color: #4F5F6F
+
+        span
+            padding: 0 0 0 20px
+
+    .statsContent
+        text-align: center
+        padding: 50px 0
+
+    .confirm
+        &:before
+            content: ' '
+            display: block
+            background: url('./img/confirm.png') no-repeat
+            background-size: 100% 100%
+            height: 110px
+            width: @height
+            margin: 0 auto 50px
+
+        .statusText
+            span
+                background: url('./img/dot.png') no-repeat left center
+
+    .loading
+        .statusText
+            span
+                background: url('./img/dot2.png') no-repeat left center
+
+        .loadEffect
+            width: 110px
+            height: 110px
+            position: relative
+            margin: 0 auto
+            margin-bottom: 50px
+
+        .loadEffect span
+            display: inline-block
+            width: 16px
+            height: 16px
+            border-radius: 50%
+            background: #20BBED
+            position: absolute
+            -webkit-animation: load 1.04s ease infinite
+
+        @keyframes load
+            0%
+                opacity: 1
+
+            100%
+                opacity: 0.2
+
+        .loadEffect span:nth-child(1)
+            left: 0
+            top: 50%
+            margin-top: -8px
+            -webkit-animation-delay: 0.13s
+
+        .loadEffect span:nth-child(2)
+            left: 14px
+            top: 14px
+            -webkit-animation-delay: 0.26s
+
+        .loadEffect span:nth-child(3)
+            left: 50%
+            top: 0
+            margin-left: -8px
+            -webkit-animation-delay: 0.39s
+
+        .loadEffect span:nth-child(4)
+            top: 14px
+            right: 14px
+            -webkit-animation-delay: 0.52s
+
+        .loadEffect span:nth-child(5)
+            right: 0
+            top: 50%
+            margin-top: -8px
+            -webkit-animation-delay: 0.65s
+
+        .loadEffect span:nth-child(6)
+            right: 14px
+            bottom: 14px
+            -webkit-animation-delay: 0.78s
+
+        .loadEffect span:nth-child(7)
+            bottom: 0
+            left: 50%
+            margin-left: -8px
+            -webkit-animation-delay: 0.91s
+
+        .loadEffect span:nth-child(8)
+            bottom: 14px
+            left: 14px
+            -webkit-animation-delay: 1.04s
+
+    .pending
+        .statusText
+            span
+                background: url('./img/dot3.png') no-repeat left center
+
+        .loadEffect span
+            background-color: #2abb9c
+
+    .error
+        &:before
+            content: ' '
+            display: block
+            background: url('./img/confirm.png') no-repeat
+            background-size: 100% 100%
+            height: 110px
+            width: @height
+            margin: 0 auto 50px
+
+        .statusText
+            span
+                background: url('./img/dot4.png') no-repeat left center

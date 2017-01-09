@@ -1,0 +1,3 @@
+slither ErrorReporter.sol 
+INFO:Slither:ErrorReporter.sol analyzed (2 contracts with 46 detectors), 0 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

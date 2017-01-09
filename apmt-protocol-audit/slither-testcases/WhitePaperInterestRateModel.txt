@@ -1,0 +1,16 @@
+$ slither WhitePaperInterestRateModel.sol
+INFO:Detectors:
+WhitePaperInterestRateModel.getSupplyRate(uint256,uint256,uint256,uint256) (WhitePaperInterestRateModel.sol#79-84) performs a multiplication on the result of a division:
+	-rateToPool = borrowRate.mul(oneMinusReserveFactor).div(1e18) (WhitePaperInterestRateModel.sol#82)
+	-utilizationRate(cash,borrows,reserves).mul(rateToPool).div(1e18) (WhitePaperInterestRateModel.sol#83)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#divide-before-multiply
+INFO:Detectors:
+Constant InterestRateModel.isInterestRateModel (InterestRateModel.sol#9) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant WhitePaperInterestRateModel.blocksPerYear (WhitePaperInterestRateModel.sol#19) is not in UPPER_CASE_WITH_UNDERSCORES
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformity-to-solidity-naming-conventions
+INFO:Detectors:
+getSupplyRate(uint256,uint256,uint256,uint256) should be declared external:
+	- WhitePaperInterestRateModel.getSupplyRate(uint256,uint256,uint256,uint256) (WhitePaperInterestRateModel.sol#79-84)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:WhitePaperInterestRateModel.sol analyzed (3 contracts with 46 detectors), 4 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

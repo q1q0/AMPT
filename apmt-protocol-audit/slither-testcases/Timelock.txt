@@ -1,0 +1,36 @@
+INFO:Detectors:
+Reentrancy in Timelock.executeTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#81-106):
+	External calls:
+	- (success,returnData) = target.call.value(value)(callData) (Timelock.sol#100)
+	Event emitted after the call(s):
+	- ExecuteTransaction(txHash,target,value,signature,data,eta) (Timelock.sol#103)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
+INFO:Detectors:
+Timelock.queueTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#61-70) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(eta >= getBlockTimestamp().add(delay),Timelock::queueTransaction: Estimated execution block must satisfy delay.) (Timelock.sol#63)
+Timelock.executeTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#81-106) uses timestamp for comparisons
+	Dangerous comparisons:
+	- require(bool,string)(getBlockTimestamp() >= eta,Timelock::executeTransaction: Transaction hasn't surpassed time lock.) (Timelock.sol#86)
+	- require(bool,string)(getBlockTimestamp() <= eta.add(GRACE_PERIOD),Timelock::executeTransaction: Transaction is stale.) (Timelock.sol#87)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#block-timestamp
+INFO:Detectors:
+Low level call in Timelock.executeTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#81-106):
+	- (success,returnData) = target.call.value(value)(callData) (Timelock.sol#100)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
+INFO:Detectors:
+setDelay(uint256) should be declared external:
+	- Timelock.setDelay(uint256) (Timelock.sol#37-44)
+acceptAdmin() should be declared external:
+	- Timelock.acceptAdmin() (Timelock.sol#46-52)
+setPendingAdmin(address) should be declared external:
+	- Timelock.setPendingAdmin(address) (Timelock.sol#54-59)
+queueTransaction(address,uint256,string,bytes,uint256) should be declared external:
+	- Timelock.queueTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#61-70)
+cancelTransaction(address,uint256,string,bytes,uint256) should be declared external:
+	- Timelock.cancelTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#72-79)
+executeTransaction(address,uint256,string,bytes,uint256) should be declared external:
+	- Timelock.executeTransaction(address,uint256,string,bytes,uint256) (Timelock.sol#81-106)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:Timelock.sol analyzed (2 contracts with 46 detectors), 10 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

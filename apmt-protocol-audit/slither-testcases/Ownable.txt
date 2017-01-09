@@ -1,0 +1,7 @@
+$ slither Ownable.sol
+INFO:Detectors:
+transferOwnership(address) should be declared external:
+	- Ownable.transferOwnership(address) (Ownable.sol#35-39)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:Ownable.sol analyzed (1 contracts with 46 detectors), 1 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

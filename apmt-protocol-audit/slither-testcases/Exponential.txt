@@ -1,0 +1,17 @@
+slither Exponential.sol
+INFO:Detectors:
+Exponential.divScalarByExpTruncate(uint256,Exponential.Exp).fraction (Exponential.sol#135) shadows:
+	- Exponential.fraction(uint256,uint256) (Exponential.sol#347-349) (function)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#local-variable-shadowing
+INFO:Detectors:
+Constant Exponential.expScale (Exponential.sol#13) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Exponential.doubleScale (Exponential.sol#14) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Exponential.halfExpScale (Exponential.sol#15) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant Exponential.mantissaOne (Exponential.sol#16) is not in UPPER_CASE_WITH_UNDERSCORES
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformity-to-solidity-naming-conventions
+INFO:Detectors:
+Exponential.mantissaOne (Exponential.sol#16) is never used in Exponential (Exponential.sol#12-350)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#unused-state-variables
+INFO:Slither:Exponential.sol analyzed (2 contracts with 46 detectors), 6 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration
+

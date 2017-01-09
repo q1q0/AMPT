@@ -1,0 +1,74 @@
+.confirmDialog
+    .ant-modal-body
+        padding: 0
+
+    .confirmTitle
+        height: 48px
+        line-height: @height
+        margin: 0 10px
+        padding: 0 18px
+        font-weight: bold
+        color: #4F5F6F
+        font-size: 20px
+        border-bottom: 1px solid #E1E7F0
+
+    .confirmContent
+        padding: 35px 30px 0
+        text-align: center
+
+        .title
+            padding: 30px 0 10px
+            color: #000
+            font-size: 16px
+
+        .content
+            color: #373737
+
+        .number
+            justifyContentSpaceBetween()
+            padding: 30px 0
+
+            .icon
+                height: 97px
+                line-height: 97px
+
+            .agree
+                color: #5B87F7
+                width: 40%
+                text-align: center
+                font-size: 22px
+                font-weight: bold
+                background: #f1f1f1
+                border-radius: 10px
+                padding: 30px 5px
+
+            .against
+                color: #FF6C54
+                width: 40%
+                font-size: 22px
+                font-weight: bold
+                background: #f1f1f1
+                border-radius: 10px
+                padding: 30px 5px
+
+    .confirmBtn
+        display: flex
+        padding: 0 15px 35px
+
+        .btn
+            margin: 0 15px
+            flex: 1
+            text-align: center
+            font-size: 14px
+            color: #fff
+            height: 40px
+            line-height: @height
+            border-radius: 4px
+            cursor pointer
+            padding: 0
+
+            &.agree
+                background: #5B87F7
+
+            &.against
+                background: #FF6C54

@@ -1,0 +1,17 @@
+ slither LegacyJumpRateModelV2.sol
+INFO:Detectors:
+BaseJumpRateModelV2.getSupplyRate(uint256,uint256,uint256,uint256) (BaseJumpRateModelV2.sol#115-120) performs a multiplication on the result of a division:
+	-rateToPool = borrowRate.mul(oneMinusReserveFactor).div(1e18) (BaseJumpRateModelV2.sol#118)
+	-utilizationRate(cash,borrows,reserves).mul(rateToPool).div(1e18) (BaseJumpRateModelV2.sol#119)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#divide-before-multiply
+INFO:Detectors:
+Constant BaseJumpRateModelV2.blocksPerYear (BaseJumpRateModelV2.sol#23) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant LegacyInterestRateModel.isInterestRateModel (LegacyInterestRateModel.sol#9) is not in UPPER_CASE_WITH_UNDERSCORES
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformity-to-solidity-naming-conventions
+INFO:Detectors:
+getSupplyRate(uint256,uint256,uint256,uint256) should be declared external:
+	- BaseJumpRateModelV2.getSupplyRate(uint256,uint256,uint256,uint256) (BaseJumpRateModelV2.sol#115-120)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:LegacyJumpRateModelV2.sol analyzed (4 contracts with 46 detectors), 4 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration
+

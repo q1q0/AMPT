@@ -1,0 +1,57 @@
+INFO:Detectors:
+Variable CTokenStorage._notEntered (CTokenInterfaces.sol#10) is not in mixedCase
+Constant CTokenStorage.borrowRateMaxMantissa (CTokenInterfaces.sol#31) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant CTokenStorage.reserveFactorMaxMantissa (CTokenInterfaces.sol#36) is not in UPPER_CASE_WITH_UNDERSCORES
+Function CTokenInterface._setPendingAdmin(address) (CTokenInterfaces.sol#235) is not in mixedCase
+Function CTokenInterface._acceptAdmin() (CTokenInterfaces.sol#236) is not in mixedCase
+Function CTokenInterface._setComptroller(ComptrollerInterface) (CTokenInterfaces.sol#237) is not in mixedCase
+Function CTokenInterface._setReserveFactor(uint256) (CTokenInterfaces.sol#238) is not in mixedCase
+Function CTokenInterface._reduceReserves(uint256) (CTokenInterfaces.sol#239) is not in mixedCase
+Function CTokenInterface._setInterestRateModel(InterestRateModel) (CTokenInterfaces.sol#240) is not in mixedCase
+Constant CTokenInterface.isCToken (CTokenInterfaces.sol#123) is not in UPPER_CASE_WITH_UNDERSCORES
+Function CErc20Interface._addReserves(uint256) (CTokenInterfaces.sol#265) is not in mixedCase
+Function CDelegatorInterface._setImplementation(address,bool,bytes) (CTokenInterfaces.sol#287) is not in mixedCase
+Function CDelegateInterface._becomeImplementation(bytes) (CTokenInterfaces.sol#296) is not in mixedCase
+Function CDelegateInterface._resignImplementation() (CTokenInterfaces.sol#301) is not in mixedCase
+Constant ComptrollerInterface.isComptroller (ComptrollerInterface.sol#5) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant InterestRateModel.isInterestRateModel (InterestRateModel.sol#9) is not in UPPER_CASE_WITH_UNDERSCORES
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformity-to-solidity-naming-conventions
+INFO:Detectors:
+CDelegationStorage.implementation (CTokenInterfaces.sol#272) should be constant
+CErc20Storage.underlying (CTokenInterfaces.sol#247) should be constant
+CTokenStorage._notEntered (CTokenInterfaces.sol#10) should be constant
+CTokenStorage.accrualBlockNumber (CTokenInterfaces.sol#71) should be constant
+CTokenStorage.admin (CTokenInterfaces.sol#41) should be constant
+CTokenStorage.borrowIndex (CTokenInterfaces.sol#76) should be constant
+CTokenStorage.decimals (CTokenInterfaces.sol#25) should be constant
+CTokenStorage.initialExchangeRateMantissa (CTokenInterfaces.sol#61) should be constant
+CTokenStorage.name (CTokenInterfaces.sol#15) should be constant
+CTokenStorage.pendingAdmin (CTokenInterfaces.sol#46) should be constant
+CTokenStorage.reserveFactorMantissa (CTokenInterfaces.sol#66) should be constant
+CTokenStorage.symbol (CTokenInterfaces.sol#20) should be constant
+CTokenStorage.totalBorrows (CTokenInterfaces.sol#81) should be constant
+CTokenStorage.totalReserves (CTokenInterfaces.sol#86) should be constant
+CTokenStorage.totalSupply (CTokenInterfaces.sol#91) should be constant
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+INFO:Detectors:
+borrowBalanceStored(address) should be declared external:
+	- CTokenInterface.borrowBalanceStored(address) (CTokenInterfaces.sol#225)
+exchangeRateCurrent() should be declared external:
+	- CTokenInterface.exchangeRateCurrent() (CTokenInterfaces.sol#226)
+exchangeRateStored() should be declared external:
+	- CTokenInterface.exchangeRateStored() (CTokenInterfaces.sol#227)
+accrueInterest() should be declared external:
+	- CTokenInterface.accrueInterest() (CTokenInterfaces.sol#229)
+_setComptroller(ComptrollerInterface) should be declared external:
+	- CTokenInterface._setComptroller(ComptrollerInterface) (CTokenInterfaces.sol#237)
+_setInterestRateModel(InterestRateModel) should be declared external:
+	- CTokenInterface._setInterestRateModel(InterestRateModel) (CTokenInterfaces.sol#240)
+_setImplementation(address,bool,bytes) should be declared external:
+	- CDelegatorInterface._setImplementation(address,bool,bytes) (CTokenInterfaces.sol#287)
+_becomeImplementation(bytes) should be declared external:
+	- CDelegateInterface._becomeImplementation(bytes) (CTokenInterfaces.sol#296)
+_resignImplementation() should be declared external:
+	- CDelegateInterface._resignImplementation() (CTokenInterfaces.sol#301)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#public-function-that-could-be-declared-external
+INFO:Slither:CTokenInterfaces.sol analyzed (9 contracts with 46 detectors), 40 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration

@@ -1,0 +1,24 @@
+Compilation warnings/errors on DAIInterestRateModelV3.sol:
+DAIInterestRateModelV3.sol:51:34: Warning: Unused function parameter. Remove or comment out the variable name to silence this warning.
+    function updateJumpRateModel(uint baseRatePerYear, uint gapPerYear, uint jumpMultiplierPerYear, uint kink_) external {
+                                 ^------------------^
+
+INFO:Detectors:
+BaseJumpRateModelV2.getSupplyRate(uint256,uint256,uint256,uint256) (BaseJumpRateModelV2.sol#115-120) performs a multiplication on the result of a division:
+	-rateToPool = borrowRate.mul(oneMinusReserveFactor).div(1e18) (BaseJumpRateModelV2.sol#118)
+	-utilizationRate(cash,borrows,reserves).mul(rateToPool).div(1e18) (BaseJumpRateModelV2.sol#119)
+DAIInterestRateModelV3.dsrPerBlock() (DAIInterestRateModelV3.sol#82-87) performs a multiplication on the result of a division:
+	-pot.dsr().sub(1e27).div(1e9).mul(15) (DAIInterestRateModelV3.sol#83-86)
+DAIInterestRateModelV3.poke() (DAIInterestRateModelV3.sol#92-107) performs a multiplication on the result of a division:
+	-stabilityFeePerBlock = duty.add(jug.base()).sub(1e27).mul(1e18).div(1e27).mul(15) (DAIInterestRateModelV3.sol#94)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#divide-before-multiply
+INFO:Detectors:
+Constant BaseJumpRateModelV2.blocksPerYear (BaseJumpRateModelV2.sol#23) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant DAIInterestRateModelV3.assumedOneMinusReserveFactorMantissa (DAIInterestRateModelV3.sol#24) is not in UPPER_CASE_WITH_UNDERSCORES
+Constant InterestRateModel.isInterestRateModel (InterestRateModel.sol#9) is not in UPPER_CASE_WITH_UNDERSCORES
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformity-to-solidity-naming-conventions
+INFO:Detectors:
+JugLike.base (DAIInterestRateModelV3.sol#131) should be constant
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#state-variables-that-could-be-declared-constant
+INFO:Slither:DAIInterestRateModelV3.sol analyzed (7 contracts with 46 detectors), 7 result(s) found
+INFO:Slither:Use https://crytic.io/ to get access to additional detectors and Github integration
